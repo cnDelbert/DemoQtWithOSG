@@ -1,4 +1,6 @@
+
 #include "demoqtwithosg.h"
+
 
 DemoQtWithOSG::DemoQtWithOSG(QWidget *parent)
 	: QMainWindow(parent)
