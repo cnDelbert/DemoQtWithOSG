@@ -1,8 +1,9 @@
 /**
- *
- *
- *
- *
+ * @file demoqtwithosg.h
+ * @author Delbert
+ * @date 2014/05/30
+ * 
+ * 
  */
 
 #ifndef DEMOQTWITHOSG_H
@@ -10,7 +11,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_demoqtwithosg.h"
-#include <osgViewer/CompositeViewer>
+
 class DemoQtWithOSG : public QMainWindow
 {
 	Q_OBJECT
