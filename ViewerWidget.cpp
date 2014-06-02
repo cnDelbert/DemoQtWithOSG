@@ -37,4 +37,19 @@ QWidget* addViewWidget( osgQt::GraphicsWindowQt* gw,
 	addView( view );
 
 	osg::ref_ptr< osg::Camera > camera = view->getCamera();
+	camera->setGraphicsContext( gw );
+
+	const osg::GraphicsContext::Traits* traits = gw->getTraits(); ///< Set Grapics Window size
+
+	camera->setClearColor( osg::Vec4(0., 0.2, 0.6, 1.0) ); ///< Clear Color
+	camera->setViewport( new osg::Viewport(0, 0, traits->width, traits->height) );
+	camera->setProjectionMatrixAsPerspective( 30.f, 
+		static_cast<double>(traits->width)/static_cast<double>(traits->height), 
+		1.0f, 10000.f );
+
+	view->setSceneData( scene );
+	view->addEventHandler( new osgViewer::StatsHandler );
+	view->setCameraManipulator( new osgGA::TrackballManipulator );
+
+	return gw->getGLWidget();
 }

@@ -11,6 +11,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include "ui_demoqtwithosg.h"
+#include "ViewerWidget.h"
 
 class DemoQtWithOSG : public QMainWindow
 {
@@ -20,8 +21,11 @@ public:
 	DemoQtWithOSG(QWidget *parent = 0);
 	~DemoQtWithOSG();
 
+	ViewerWidget* viewWidget;
+
 private:
 	Ui::DemoQtWithOSGClass ui;
+
 };
 
 #endif // DEMOQTWITHOSG_H
