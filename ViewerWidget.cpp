@@ -28,8 +28,8 @@ ViewerWidget::ViewerWidget( osg::Node* scene/* = osgDB::readNodeFile("glider.osg
 	m_gridLayout->addWidget( m_mainWidget, 0, 0 );
 	setLayout( m_gridLayout );
 
-	connect(&_timer, SIGNAL(timeout()), this, SLOT( update() ));
-	_timer.start( 10 );
+	connect(&m_timer, SIGNAL(timeout()), this, SLOT( update() ));
+	m_timer.start( 10 );
 }
 
 

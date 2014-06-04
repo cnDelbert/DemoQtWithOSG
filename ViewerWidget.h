@@ -44,7 +44,7 @@ public:
 
 protected:
 	/** Tick time for update function. */
-	QTimer _timer; 
+	QTimer m_timer; 
 
 private:
 	QWidget* m_mainWidget;
