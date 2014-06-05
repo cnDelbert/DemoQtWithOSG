@@ -14,12 +14,12 @@
 #include <QMessageBox>
 
 ViewerWidget::ViewerWidget(osg::Node* scene/* = osgDB::readNodeFile("glider.osgt")*/,
-                           btDynamicsWorld* dynamicsWorld,
+                           btDynamicsWorld* dynamicsWorld/* = NULL */,
                            osgViewer::ViewerBase::ThreadingModel threadingModel
                            /* = osgViewer::CompositeViewer::SingleThreaded */ )
-    : QWidget()
+    : QWidget(),
+      m_dynamicsWorld( dynamicsWorld )
 {
-    m_dynamicsWorld = dynamicsWorld;
 	setThreadingModel( threadingModel );	 
     setKeyEventSetsDone( 0 );    ///< Disable viewer.done() by ESC
 
@@ -88,7 +88,7 @@ osgQt::GraphicsWindowQt* ViewerWidget::createGraphicsWindow( int x, int y, int w
 
 void ViewerWidget::paintEvent( QPaintEvent* event )
 {
-    if( m_dynamicsWorld != NULL )
+    if( m_dynamicsWorld != NULL )///< if the \param dynamicsWorld is omitted
     {
         m_dynamicsWorld->stepSimulation( (btScalar)m_timer.interval()/1000 );
     }

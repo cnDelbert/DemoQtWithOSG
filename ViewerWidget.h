@@ -33,10 +33,6 @@ class ViewerWidget :
 {
 public:
 	/** Create an instance of ViewerWidget. */
-//	ViewerWidget( osg::Node* scene = osgDB::readNodeFile("glider.osgt"),
-//		osgViewer::ViewerBase::ThreadingModel
-//		threadingModel = osgViewer::CompositeViewer::SingleThreaded );
-
     ViewerWidget( osg::Node* scene = osgDB::readNodeFile("cow.osgt"),
                   btDynamicsWorld* dynamicsWorld = NULL,
                   osgViewer::ViewerBase::ThreadingModel

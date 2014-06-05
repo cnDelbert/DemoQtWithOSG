@@ -9,16 +9,21 @@
 
 #include "demoqtwithosg.h"
 #include <QMessageBox>
+#include <QLabel>
 #include "ViewerWidget.h"
-/* For Bullet Test */
-//#include <btBulletCollisionCommon.h>
+
+/** Bullet Headers */
 #include <btBulletDynamicsCommon.h>
+
+/** osgBullet Headers */
 #include <osgbCollision/CollisionShapes.h>
 #include <osgbDynamics/MotionState.h>
+
+/** OSG Headers */
 #include <osg/Shape>
 #include <osg/ShapeDrawable>
-/* End Include */
-/* Extra Methods */
+
+/** For bullet Demo */
 osg::MatrixTransform* createOSGBox( osg::Vec3 size )
 {
     osg::Box* box = new osg::Box();
@@ -56,6 +61,8 @@ btRigidBody * createBTBox( osg::MatrixTransform * box,
     btRigidBody * body = new btRigidBody( rb );
     return( body );
 }
+
+/** Physics Initialize */
 btDynamicsWorld* initPhysics()//Physics Initialize
 {
     btDefaultCollisionConfiguration * collisionConfiguration = new btDefaultCollisionConfiguration();
@@ -71,7 +78,6 @@ btDynamicsWorld* initPhysics()//Physics Initialize
 
     return( dynamicsWorld );
 }
-/* End Extra Methods*/
 
 DemoQtWithOSG::DemoQtWithOSG(QWidget *parent)
 	: QMainWindow(parent)
@@ -87,36 +93,43 @@ DemoQtWithOSG::DemoQtWithOSG(QWidget *parent)
 	osg::ref_ptr< osg::Group > root = new osg::Group;
 	root->addChild( cow );
 
-   osg::ref_ptr< osg::Group > r = new osg::Group;
-   btDynamicsWorld* dynamicsWorld = initPhysics();
-   osg::ref_ptr< osg::MatrixTransform > ground;
-   btRigidBody* groundBody;
+    /** \brief Create a box and a ground, to simulate the world */
+    osg::ref_ptr< osg::Group > r = new osg::Group;
+    btDynamicsWorld* dynamicsWorld = initPhysics();
+    osg::ref_ptr< osg::MatrixTransform > ground;
+    btRigidBody* groundBody;
 
-   float thin = .01;//
-   ground = createOSGBox( osg::Vec3( 50, 50, thin ) );//ground area
-   groundBody = createSBTBox( ground, osg::Vec3( 0, 0, 0 ) );
-	
-   r->addChild( ground );
-   osg::ref_ptr<osg::MatrixTransform> box;
-   btRigidBody* rbBox;
-   box = createOSGBox(osg::Vec3(2, 2, 2));
-   rbBox = createBTBox(box, osg::Vec3( 10, 0 ,50));
-   r->addChild(box);
-   dynamicsWorld->addRigidBody(rbBox);
-   dynamicsWorld->addRigidBody( groundBody );
+    float thin = .01;//
+    ground = createOSGBox( osg::Vec3( 50, 50, thin ) );//ground area
+    groundBody = createSBTBox( ground, osg::Vec3( 0, 0, 0 ) );
 
-   ViewerWidget* vw = new ViewerWidget( r, dynamicsWorld);
+    r->addChild( ground );
+    osg::ref_ptr<osg::MatrixTransform> box;
+    btRigidBody* rbBox;
+    box = createOSGBox(osg::Vec3(2, 2, 2));
+    rbBox = createBTBox(box, osg::Vec3( 10, 0 ,50));
+    r->addChild(box);
+    dynamicsWorld->addRigidBody(rbBox);
+    dynamicsWorld->addRigidBody( groundBody );
+
+    /** \brief ViewerWidget with physics */
+    ViewerWidget* vw = new ViewerWidget( r, dynamicsWorld );
 
 	osgViewer::ViewerBase::ThreadingModel threadingModel = 
-		osgViewer::ViewerBase::SingleThreaded; /// Explict declaration for Qt 5
+        osgViewer::ViewerBase::SingleThreaded; ///< Explict declaration for Qt 5
     viewerWidget = new ViewerWidget( root, NULL, threadingModel );
 
     //viewerWidget->setGeometry(100, 100, 800, 600 );
     //viewerWidget->show();
 
+    QLabel* labelLeft  = new QLabel( tr("OSG with bullet"), this);
+    QLabel* labelRight = new QLabel( tr("OSG without bullet"), this);
+
     m_mainGridLayout = new QGridLayout;
-    m_mainGridLayout->addWidget( vw, 0, 0, 1, 1 );
-    m_mainGridLayout->addWidget( viewerWidget, 0, 1, 1, 1 );
+    m_mainGridLayout->addWidget( vw, 0, 0, 4, 1 );
+    m_mainGridLayout->addWidget( viewerWidget, 0, 1, 4, 1 );
+    m_mainGridLayout->addWidget( labelLeft, 4, 0, 1, 1 , Qt::AlignCenter | Qt::AlignHCenter );
+    m_mainGridLayout->addWidget( labelRight, 4, 1, 1, 1 , Qt::AlignCenter | Qt::AlignHCenter );
 
     centralWidget()->setLayout( m_mainGridLayout );
 }
