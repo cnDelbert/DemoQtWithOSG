@@ -13,14 +13,15 @@
 #include <osgViewer/CompositeViewer>
 #include <QMessageBox>
 
-ViewerWidget::ViewerWidget( osg::Node* scene/* = osgDB::readNodeFile("glider.osgt")*/,
-	osgViewer::ViewerBase::ThreadingModel threadingModel
-	/* = osgViewer::CompositeViewer::SingleThreaded */ )
-	: QWidget()
+ViewerWidget::ViewerWidget(osg::Node* scene/* = osgDB::readNodeFile("glider.osgt")*/,
+                           btDynamicsWorld* dynamicsWorld,
+                           osgViewer::ViewerBase::ThreadingModel threadingModel
+                           /* = osgViewer::CompositeViewer::SingleThreaded */ )
+    : QWidget()
 {
-	setThreadingModel( threadingModel );
-	 
-	setKeyEventSetsDone( 0 );    /// Disable viewer.done() by ESC
+    m_dynamicsWorld = dynamicsWorld;
+	setThreadingModel( threadingModel );	 
+    setKeyEventSetsDone( 0 );    ///< Disable viewer.done() by ESC
 
 	m_mainWidget = addViewWidget( createGraphicsWindow( 0, 0, 100, 100), scene );
 
@@ -29,9 +30,8 @@ ViewerWidget::ViewerWidget( osg::Node* scene/* = osgDB::readNodeFile("glider.osg
 	setLayout( m_gridLayout );
 
 	connect(&m_timer, SIGNAL(timeout()), this, SLOT( update() ));
-	m_timer.start( 10 );
+    m_timer.start( 17 );
 }
-
 
 ViewerWidget::~ViewerWidget(void)
 {
@@ -88,5 +88,9 @@ osgQt::GraphicsWindowQt* ViewerWidget::createGraphicsWindow( int x, int y, int w
 
 void ViewerWidget::paintEvent( QPaintEvent* event )
 {
+    if( m_dynamicsWorld != NULL )
+    {
+        m_dynamicsWorld->stepSimulation( (btScalar)m_timer.interval()/1000 );
+    }
 	frame();
 }

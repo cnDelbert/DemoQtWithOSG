@@ -9,6 +9,69 @@
 
 #include "demoqtwithosg.h"
 #include <QMessageBox>
+#include "ViewerWidget.h"
+/* For Bullet Test */
+//#include <btBulletCollisionCommon.h>
+#include <btBulletDynamicsCommon.h>
+#include <osgbCollision/CollisionShapes.h>
+#include <osgbDynamics/MotionState.h>
+#include <osg/Shape>
+#include <osg/ShapeDrawable>
+/* End Include */
+/* Extra Methods */
+osg::MatrixTransform* createOSGBox( osg::Vec3 size )
+{
+    osg::Box* box = new osg::Box();
+    box->setHalfLengths( size );
+    osg::ShapeDrawable * shape = new osg::ShapeDrawable( box );
+    osg::Geode * geode = new osg::Geode();
+    geode->addDrawable( shape );
+    osg::MatrixTransform * transform = new osg::MatrixTransform();
+    transform->addChild( geode );
+    return( transform );
+}
+btRigidBody * createSBTBox( osg::MatrixTransform * box,
+    osg::Vec3 center )//return the Bullet with the center as the center of mass
+{
+    btCollisionShape * collision = osgbCollision::btBoxCollisionShapeFromOSG( box );//create a collision shape from box
+    osgbDynamics::MotionState * motion = new osgbDynamics::MotionState();
+    motion->setTransform( box );
+    motion->setParentTransform( osg::Matrix::translate( center ) );
+    btScalar mass( 0.0 );
+    btVector3 inertia( 0, 0, 0 );//
+    btRigidBody::btRigidBodyConstructionInfo rb( mass, motion, collision, inertia );//init the rigidBody
+    btRigidBody * body = new btRigidBody( rb );
+    return( body );
+}
+btRigidBody * createBTBox( osg::MatrixTransform * box,
+    osg::Vec3 center )//return the Bullet with the center as the center of mass
+{
+    btCollisionShape * collision = osgbCollision::btBoxCollisionShapeFromOSG( box );//create a collision shape from box
+    osgbDynamics::MotionState * motion = new osgbDynamics::MotionState();
+    motion->setTransform( box );
+    motion->setParentTransform( osg::Matrix::translate( center ) );
+    btScalar mass( 1.0 );
+    btVector3 inertia( 0, 0, 0 );  // can also be calculated
+    btRigidBody::btRigidBodyConstructionInfo rb( mass, motion, collision, inertia );//init the rigidBody
+    btRigidBody * body = new btRigidBody( rb );
+    return( body );
+}
+btDynamicsWorld* initPhysics()//Physics Initialize
+{
+    btDefaultCollisionConfiguration * collisionConfiguration = new btDefaultCollisionConfiguration();
+    btCollisionDispatcher * dispatcher = new btCollisionDispatcher( collisionConfiguration );
+    btConstraintSolver * solver = new btSequentialImpulseConstraintSolver;
+
+    btVector3 worldAabbMin( -10000, -10000, -10000 );
+    btVector3 worldAabbMax( 10000, 10000, 10000 );
+    btBroadphaseInterface * inter = new btAxisSweep3( worldAabbMin, worldAabbMax, 1000 );
+
+    btDynamicsWorld * dynamicsWorld = new btDiscreteDynamicsWorld( dispatcher, inter, solver, collisionConfiguration );
+    dynamicsWorld->setGravity( btVector3( 0, 0, -9.8 ) );
+
+    return( dynamicsWorld );
+}
+/* End Extra Methods*/
 
 DemoQtWithOSG::DemoQtWithOSG(QWidget *parent)
 	: QMainWindow(parent)
@@ -23,14 +86,39 @@ DemoQtWithOSG::DemoQtWithOSG(QWidget *parent)
 	osg::ref_ptr< osg::Node > cow = osgDB::readNodeFile("cow.osgt");
 	osg::ref_ptr< osg::Group > root = new osg::Group;
 	root->addChild( cow );
+
+   osg::ref_ptr< osg::Group > r = new osg::Group;
+   btDynamicsWorld* dynamicsWorld = initPhysics();
+   osg::ref_ptr< osg::MatrixTransform > ground;
+   btRigidBody* groundBody;
+
+   float thin = .01;//
+   ground = createOSGBox( osg::Vec3( 50, 50, thin ) );//ground area
+   groundBody = createSBTBox( ground, osg::Vec3( 0, 0, 0 ) );
 	
+   r->addChild( ground );
+   osg::ref_ptr<osg::MatrixTransform> box;
+   btRigidBody* rbBox;
+   box = createOSGBox(osg::Vec3(2, 2, 2));
+   rbBox = createBTBox(box, osg::Vec3( 10, 0 ,50));
+   r->addChild(box);
+   dynamicsWorld->addRigidBody(rbBox);
+   dynamicsWorld->addRigidBody( groundBody );
+
+   ViewerWidget* vw = new ViewerWidget( r, dynamicsWorld);
+
 	osgViewer::ViewerBase::ThreadingModel threadingModel = 
 		osgViewer::ViewerBase::SingleThreaded; /// Explict declaration for Qt 5
-    viewerWidget = new ViewerWidget( root, threadingModel );
-	setCentralWidget( viewerWidget );
-	// 	viewerWidget->setGeometry(100, 100, 800, 600 );
- 	viewerWidget->show();
-	
+    viewerWidget = new ViewerWidget( root, NULL, threadingModel );
+
+    //viewerWidget->setGeometry(100, 100, 800, 600 );
+    //viewerWidget->show();
+
+    m_mainGridLayout = new QGridLayout;
+    m_mainGridLayout->addWidget( vw, 0, 0, 1, 1 );
+    m_mainGridLayout->addWidget( viewerWidget, 0, 1, 1, 1 );
+
+    centralWidget()->setLayout( m_mainGridLayout );
 }
 
 DemoQtWithOSG::~DemoQtWithOSG()

@@ -69,6 +69,10 @@ private:
     void createToolbars();
     void createStatusBar();
 
+    /* Layouts */
+    QGridLayout* m_mainGridLayout;
+
+
 };
 
 #endif // DEMOQTWITHOSG_H

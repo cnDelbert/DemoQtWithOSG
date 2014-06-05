@@ -24,15 +24,23 @@
 #include <osgQt/GraphicsWindowQt>
 
 
+#include <btBulletDynamicsCommon.h>
+
+
 class ViewerWidget :
 	public QWidget,
 	public osgViewer::CompositeViewer
 {
 public:
 	/** Create an instance of ViewerWidget. */
-	ViewerWidget( osg::Node* scene = osgDB::readNodeFile("glider.osgt"),
-		osgViewer::ViewerBase::ThreadingModel 
-		threadingModel = osgViewer::CompositeViewer::SingleThreaded );
+//	ViewerWidget( osg::Node* scene = osgDB::readNodeFile("glider.osgt"),
+//		osgViewer::ViewerBase::ThreadingModel
+//		threadingModel = osgViewer::CompositeViewer::SingleThreaded );
+
+    ViewerWidget( osg::Node* scene = osgDB::readNodeFile("cow.osgt"),
+                  btDynamicsWorld* dynamicsWorld = NULL,
+                  osgViewer::ViewerBase::ThreadingModel
+                  threadingModel = osgViewer::CompositeViewer::SingleThreaded );
 
 	/** create a GraphicsWindow to show the scene. */
 	osgQt::GraphicsWindowQt* createGraphicsWindow(int x, int y, int w, int h,
@@ -49,6 +57,8 @@ protected:
 private:
 	QWidget* m_mainWidget;
 	QGridLayout* m_gridLayout;
+
+    btDynamicsWorld* m_dynamicsWorld;
 
 	QWidget* addViewWidget( osgQt::GraphicsWindowQt* gw, osg::Node* scene );
 };
