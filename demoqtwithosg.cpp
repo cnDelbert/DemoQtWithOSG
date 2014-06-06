@@ -1,10 +1,13 @@
 /**
  * @file
  * @author  Delbert
- * @date    2014/06/03
+ * @date    2014/06/06
  * @brief   Main window of the application.
- * @version 0.1.1
- *
+ * @version 0.1.3
+ * 
+ * 
+ * 0.1.3 add bullet support.
+ * 0.1.1 basic functions
  */
 
 #include "demoqtwithosg.h"

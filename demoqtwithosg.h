@@ -5,6 +5,11 @@
  * @date     2014/05/30
  * @version  0.1.1
  * @brief    The MainWindow class
+ * 
+ * 0.1.3 Add bullet support.
+ * 0.1.2 make the GridLayout the Center Widget.
+ * 0.1.1 Basic functions
+ * 
  */
 
 #ifndef DEMOQTWITHOSG_H
