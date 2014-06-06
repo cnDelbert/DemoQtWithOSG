@@ -4,9 +4,13 @@
  * @brief   Generate an OSGViewer window within Qt frame.
  *
  * @author  Delbert
- * @date    2014/05/30
- * @version 0.1.1
+ * @date    2014/06/06
+ * @version 0.1.3
  * 
+ * 0.1.3 Add getView method, so that event handler can be added.
+ * 0.1.2 Add bullet support.
+ * 0.1.1 Basic functions.
+ *
  * ViewerWidget is derived from QWidget and CompositeViewer, which can
  * be embeded in a Qt Window. CompositeViewer is used for multi-thread.
  */
@@ -46,16 +50,25 @@ public:
 	virtual void paintEvent( QPaintEvent* event ); 
 	~ViewerWidget( void );
 
+    /** Get Methods to get obj or status */
+    osgViewer::View* getView();
+
 protected:
 	/** Tick time for update function. */
 	QTimer m_timer; 
 
 private:
-	QWidget* m_mainWidget;
+    /** Qt */
+	QWidget* m_mainWidget;    
 	QGridLayout* m_gridLayout;
 
+    QWidget* addViewWidget( osgQt::GraphicsWindowQt* gw, osg::Node* scene );
+
+    /** OSG */
+    osgViewer::View* m_view;
+
+    /** bullet */
     btDynamicsWorld* m_dynamicsWorld;
 
-	QWidget* addViewWidget( osgQt::GraphicsWindowQt* gw, osg::Node* scene );
 };
 

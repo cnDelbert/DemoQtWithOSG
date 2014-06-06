@@ -3,8 +3,8 @@
  * @brief    Generate an OSGViewer window within Qt frame.
  *
  * @author   Delbert
- * @date     2014/05/30
- * @version  0.1.1
+ * @date     2014/06/6
+ * @version  0.1.3
  * @param    threadingModel Default setting is SingleThreaded for Qt5 compactable.
  * @param    scene The scene will show in the ViewerWidget.
  * @return   An instance of ViewerWidget.
@@ -23,6 +23,8 @@ ViewerWidget::ViewerWidget(osg::Node* scene/* = osgDB::readNodeFile("glider.osgt
 	setThreadingModel( threadingModel );	 
     setKeyEventSetsDone( 0 );    ///< Disable viewer.done() by ESC
 
+    m_view = new osgViewer::View;
+
 	m_mainWidget = addViewWidget( createGraphicsWindow( 0, 0, 100, 100), scene );
 
 	m_gridLayout = new QGridLayout;
@@ -37,18 +39,21 @@ ViewerWidget::~ViewerWidget(void)
 {
 }
 
+osgViewer::View* ViewerWidget::getView()
+{
+    return m_view;
+}
+
 /**
- * @brief Add the viewWidget.
+ * @brief  Add the viewWidget.
  * @return A pointer to QWidget.
  */
 QWidget* ViewerWidget::addViewWidget( osgQt::GraphicsWindowQt* gw, 
 	osg::Node* scene )
 {
-	/*osg::ref_ptr< osgViewer::View >*/
-	osgViewer::View* view = new osgViewer::View;
-	addView( view );
+    addView( m_view );
 
-	osg::ref_ptr< osg::Camera > camera = view->getCamera();
+    osg::ref_ptr< osg::Camera > camera = m_view->getCamera();
 	camera->setGraphicsContext( gw );
 
 	const osg::GraphicsContext::Traits* traits = gw->getTraits(); /// Set Grapics Window size
@@ -59,9 +64,9 @@ QWidget* ViewerWidget::addViewWidget( osgQt::GraphicsWindowQt* gw,
 		static_cast<double>(traits->width)/static_cast<double>(traits->height), 
 		1.0f, 10000.0f );
 
-	view->setSceneData( scene );
-	view->addEventHandler( new osgViewer::StatsHandler );
-	view->setCameraManipulator( new osgGA::TrackballManipulator );
+    m_view->setSceneData( scene );
+    m_view->addEventHandler( new osgViewer::StatsHandler );
+    m_view->setCameraManipulator( new osgGA::TrackballManipulator );
 
 	return gw->getGLWidget();
 }
