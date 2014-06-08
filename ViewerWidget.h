@@ -51,7 +51,12 @@ public:
 	~ViewerWidget( void );
 
     /** Get Methods to get obj or status */
-    osgViewer::View* getView();
+    osgViewer::View* getView( void );
+
+    void setHomePosition(const osg::Vec3 &eye,
+                         const osg::Vec3 &center,
+                         const osg::Vec3 &up,
+                         bool autoComputeHomePosition = false );
 
 protected:
 	/** Tick time for update function. */
@@ -66,6 +71,7 @@ private:
 
     /** OSG */
     osgViewer::View* m_view;
+    osgGA::TrackballManipulator* m_tb;
 
     /** bullet */
     btDynamicsWorld* m_dynamicsWorld;

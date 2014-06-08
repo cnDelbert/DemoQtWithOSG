@@ -24,6 +24,7 @@ ViewerWidget::ViewerWidget(osg::Node* scene/* = osgDB::readNodeFile("glider.osgt
     setKeyEventSetsDone( 0 );    ///< Disable viewer.done() by ESC
 
     m_view = new osgViewer::View;
+    m_tb   = new osgGA::TrackballManipulator;
 
 	m_mainWidget = addViewWidget( createGraphicsWindow( 0, 0, 100, 100), scene );
 
@@ -39,9 +40,20 @@ ViewerWidget::~ViewerWidget(void)
 {
 }
 
-osgViewer::View* ViewerWidget::getView()
+osgViewer::View* ViewerWidget::getView( void )
 {
     return m_view;
+}
+
+void ViewerWidget::setHomePosition(const osg::Vec3 &eye,
+                                   const osg::Vec3 &center,
+                                   const osg::Vec3 &up,
+                                   bool autoComputeHomePosition /*= false*/)
+{
+    if( autoComputeHomePosition )
+        m_tb->setHomePosition( eye, center, up, true );
+    else
+        m_tb->setHomePosition( eye, center, up );
 }
 
 /**
@@ -66,7 +78,7 @@ QWidget* ViewerWidget::addViewWidget( osgQt::GraphicsWindowQt* gw,
 
     m_view->setSceneData( scene );
     m_view->addEventHandler( new osgViewer::StatsHandler );
-    m_view->setCameraManipulator( new osgGA::TrackballManipulator );
+    m_view->setCameraManipulator( m_tb /*new osgGA::TrackballManipulator*/ );
 
 	return gw->getGLWidget();
 }
