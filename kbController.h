@@ -3,6 +3,7 @@
 
 #include <osgGA/GUIEventHandler>
 #include <btBulletDynamicsCommon.h>
+
 /**
  * @brief The kbController class
  */

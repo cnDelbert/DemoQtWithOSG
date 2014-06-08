@@ -1,5 +1,5 @@
 #include "kbController.h"
-
+#include <QDebug>
 /**
  * @brief kbController::kbController
  * @param rigidBody
@@ -40,6 +40,7 @@ bool kbController::handle(const osgGA::GUIEventAdapter &ea,
         case osgGA::GUIEventAdapter::KEY_Left:
         case 'A':
             // TODO
+            qDebug<<"Turn Left";
             return true;
             break;
 
@@ -47,6 +48,7 @@ bool kbController::handle(const osgGA::GUIEventAdapter &ea,
         case osgGA::GUIEventAdapter::KEY_Right:
         case 'D':
             // TODO
+            qDebug<<"Turn Right";
             return true;
             break;
 
@@ -54,6 +56,10 @@ bool kbController::handle(const osgGA::GUIEventAdapter &ea,
         case osgGA::GUIEventAdapter::KEY_UP:
         case 'W':
             // TODO
+            qDebug<<"Go Ahead";
+            m_wTransform->setOrigin( btVector3( m_origin.getX(),
+                                                m_origin.getY() + 1,
+                                                m_origin.getZ() ) );
             return true;
             break;
 
@@ -61,6 +67,7 @@ bool kbController::handle(const osgGA::GUIEventAdapter &ea,
         case osgGA::GUIEventAdapter::KEY_Down:
         case 'S':
             // TODO
+            qDebug<<"Backward";
             return true;
             break;
 

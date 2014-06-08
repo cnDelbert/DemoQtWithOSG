@@ -1,6 +1,6 @@
 /**
  * @file     
- * @brief    Generate an OSGViewer window within Qt frame.
+ * @brief    Generate an osgViewer window within Qt frame.
  *
  * @author   Delbert
  * @date     2014/06/6
@@ -21,10 +21,11 @@ ViewerWidget::ViewerWidget(osg::Node* scene/* = osgDB::readNodeFile("glider.osgt
       m_dynamicsWorld( dynamicsWorld )
 {
 	setThreadingModel( threadingModel );	 
-    setKeyEventSetsDone( 0 );    ///< Disable viewer.done() by ESC
+    setKeyEventSetsDone( 0 );                       ///< Disable viewer.done() by ESC key
 
-    m_view = new osgViewer::View;
-    m_tb   = new osgGA::TrackballManipulator;
+    m_view       = new osgViewer::View;
+    m_bgColor    = osg::Vec4(0., 0.2, 0.6, 1.0);    ///< Set default back ground color
+    m_tb         = new osgGA::TrackballManipulator;
 
 	m_mainWidget = addViewWidget( createGraphicsWindow( 0, 0, 100, 100), scene );
 
@@ -70,7 +71,7 @@ QWidget* ViewerWidget::addViewWidget( osgQt::GraphicsWindowQt* gw,
 
 	const osg::GraphicsContext::Traits* traits = gw->getTraits(); /// Set Grapics Window size
 
-	camera->setClearColor( osg::Vec4(0., 0.2, 0.6, 1.0) ); /// Clear Color
+    camera->setClearColor( m_bgColor ); /// Clear Color
 	camera->setViewport( new osg::Viewport(0, 0, traits->width, traits->height) );
 	camera->setProjectionMatrixAsPerspective( 30.0f, 
 		static_cast<double>(traits->width)/static_cast<double>(traits->height), 

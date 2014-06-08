@@ -70,6 +70,7 @@ private:
     QWidget* addViewWidget( osgQt::GraphicsWindowQt* gw, osg::Node* scene );
 
     /** OSG */
+    osg::Vec4 m_bgColor;
     osgViewer::View* m_view;
     osgGA::TrackballManipulator* m_tb;
 
