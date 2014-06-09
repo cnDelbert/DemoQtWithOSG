@@ -152,8 +152,8 @@ DemoQtWithOSG::DemoQtWithOSG(QWidget *parent)
 
     /** \brief ViewerWidget with physics */
     ViewerWidget* vw = new ViewerWidget( scene1, dynamicsWorld );
-    //kbController* hand = new kbController( rbSphere, true );
-    //vw->getView()->addEventHandler( hand );  ///< Still there some problem with controller
+    kbController* hand = new kbController( rbSphere, true );
+    vw->getView()->addEventHandler( hand );  ///< Still there some problem with controller
 
 	osgViewer::ViewerBase::ThreadingModel threadingModel = 
         osgViewer::ViewerBase::SingleThreaded; ///< Explict declaration for Qt 5

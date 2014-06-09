@@ -17,13 +17,13 @@ public:
                          osgGA::GUIActionAdapter& aa);
 
 private:
-    bool           m_statusFLag; ///< true for work while false for idle
+    bool           m_statusFlag; ///< true for work while false for idle
 
     btVector3      m_origin;
     btQuaternion   m_rotation;
     btRigidBody*   m_rigidBody;
     btMotionState* m_motionState;
-    btTransform*   m_wTransform;
+    btTransform    m_wTransform;
 
 };
 
