@@ -11,10 +11,9 @@
  */
 
 #include "demoqtwithosg.h"
+#include "kbController.h"
 #include <QMessageBox>
 #include <QLabel>
-#include "ViewerWidget.h"
-#include "kbController.h"
 
 /** Bullet Headers */
 #include <btBulletDynamicsCommon.h>
