@@ -23,7 +23,7 @@
 #include <QtWidgets/QMenu>
 
 #include "ui_demoqtwithosg.h"
-#include "ViewerWidget.h"
+//#include "ViewerWidget.h"
 
 class DemoQtWithOSG : public QMainWindow
 {
@@ -33,7 +33,7 @@ public:
 	DemoQtWithOSG(QWidget *parent = 0);
 	~DemoQtWithOSG();
 	/** Widget to show the scene. */
-	ViewerWidget* viewerWidget;
+    //ViewerWidget* viewerWidget;
 
 private slots:
     void aboutMsgBox();
@@ -52,7 +52,7 @@ private:
     QAction* m_pasteAction;
     QAction* m_cutAction;
 
-    QAction* m_aboutAction;
+    //QAction* m_aboutAction;
 
 	/* Menus */
     QMenu* m_fileMenu; ///< File Menu

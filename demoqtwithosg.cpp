@@ -13,102 +13,103 @@
 #include "demoqtwithosg.h"
 #include <QMessageBox>
 #include <QLabel>
-#include "ViewerWidget.h"
-#include "kbController.h"
+#include <QDebug>
 
-/** Bullet Headers */
-#include <btBulletDynamicsCommon.h>
+//#include "kbController.h"
 
-/** osgBullet Headers */
-#include <osgbCollision/CollisionShapes.h>
-#include <osgbDynamics/MotionState.h>
+///** Bullet Headers */
+//#include <btBulletDynamicsCommon.h>
 
-/** OSG Headers */
-#include <osg/Shape>
-#include <osg/ShapeDrawable>
+///** osgBullet Headers */
+//#include <osgbCollision/CollisionShapes.h>
+//#include <osgbDynamics/MotionState.h>
 
-/** For bullet Demo */
-osg::MatrixTransform* createOSGBox( osg::Vec3 size )
-{
-    osg::Box* box = new osg::Box();
-    box->setHalfLengths( size );
-    osg::ShapeDrawable * shape = new osg::ShapeDrawable( box );
-    osg::Geode * geode = new osg::Geode();
-    geode->addDrawable( shape );
-    osg::MatrixTransform * transform = new osg::MatrixTransform();
-    transform->addChild( geode );
-    return( transform );
-}
-osg::MatrixTransform* createOSGSphere( btScalar radius ) ///< Create an OSG sphere
-{
-    osg::Sphere* sphere = new osg::Sphere();
-    sphere->setRadius( radius );
-    osg::ShapeDrawable* shape = new osg::ShapeDrawable( sphere );
-    osg::Geode* geode = new osg::Geode;
-    geode->addDrawable( shape );
-    osg::MatrixTransform* tr = new osg::MatrixTransform;
-    tr->addChild( geode );
-    return tr;
-}
-btRigidBody* createBTSphere( osg::MatrixTransform* sphere,
-                             osg::Vec3 center )
-{
-    btCollisionShape* collision = osgbCollision::btSphereCollisionShapeFromOSG( sphere );
-    osgbDynamics::MotionState* motion = new osgbDynamics::MotionState;
-    motion->setTransform( sphere );
-    motion->setParentTransform( osg::Matrix::translate( center ));
+///** OSG Headers */
+//#include <osg/Shape>
+//#include <osg/ShapeDrawable>
 
-    btScalar mass(1.0f);
-    btVector3 inertia;
-    collision->calculateLocalInertia( mass, inertia );
-    btRigidBody::btRigidBodyConstructionInfo rb( mass, motion, collision, inertia );
-    btRigidBody* body = new btRigidBody( rb );
-    return body;
-}
+///** For bullet Demo */
+//osg::MatrixTransform* createOSGBox( osg::Vec3 size )
+//{
+//    osg::Box* box = new osg::Box();
+//    box->setHalfLengths( size );
+//    osg::ShapeDrawable * shape = new osg::ShapeDrawable( box );
+//    osg::Geode * geode = new osg::Geode();
+//    geode->addDrawable( shape );
+//    osg::MatrixTransform * transform = new osg::MatrixTransform();
+//    transform->addChild( geode );
+//    return( transform );
+//}
+//osg::MatrixTransform* createOSGSphere( btScalar radius ) ///< Create an OSG sphere
+//{
+//    osg::Sphere* sphere = new osg::Sphere();
+//    sphere->setRadius( radius );
+//    osg::ShapeDrawable* shape = new osg::ShapeDrawable( sphere );
+//    osg::Geode* geode = new osg::Geode;
+//    geode->addDrawable( shape );
+//    osg::MatrixTransform* tr = new osg::MatrixTransform;
+//    tr->addChild( geode );
+//    return tr;
+//}
+//btRigidBody* createBTSphere( osg::MatrixTransform* sphere,
+//                             osg::Vec3 center )
+//{
+//    btCollisionShape* collision = osgbCollision::btSphereCollisionShapeFromOSG( sphere );
+//    osgbDynamics::MotionState* motion = new osgbDynamics::MotionState;
+//    motion->setTransform( sphere );
+//    motion->setParentTransform( osg::Matrix::translate( center ));
 
-btRigidBody * createSBTBox( osg::MatrixTransform * box,
-    osg::Vec3 center )//return the Bullet with the center as the center of mass
-{
-    btCollisionShape * collision = osgbCollision::btBoxCollisionShapeFromOSG( box );//create a collision shape from box
-    osgbDynamics::MotionState * motion = new osgbDynamics::MotionState();
-    motion->setTransform( box );
-    motion->setParentTransform( osg::Matrix::translate( center ) );
-    btScalar mass( 0.0 );
-    btVector3 inertia( 0, 0, 0 );//
-    btRigidBody::btRigidBodyConstructionInfo rb( mass, motion, collision, inertia );//init the rigidBody
-    btRigidBody * body = new btRigidBody( rb );
-    return( body );
-}
-btRigidBody * createBTBox( osg::MatrixTransform * box,
-    osg::Vec3 center )//return the Bullet with the center as the center of mass
-{
-    btCollisionShape * collision = osgbCollision::btBoxCollisionShapeFromOSG( box );//create a collision shape from box
-    osgbDynamics::MotionState * motion = new osgbDynamics::MotionState();
-    motion->setTransform( box );
-    motion->setParentTransform( osg::Matrix::translate( center ) );
-    btScalar mass( 1.0 );
-    btVector3 inertia( 0, 0, 0 );  // can also be calculated
-    btRigidBody::btRigidBodyConstructionInfo rb( mass, motion, collision, inertia );//init the rigidBody
-    btRigidBody * body = new btRigidBody( rb );
-    return( body );
-}
+//    btScalar mass(1.0f);
+//    btVector3 inertia;
+//    collision->calculateLocalInertia( mass, inertia );
+//    btRigidBody::btRigidBodyConstructionInfo rb( mass, motion, collision, inertia );
+//    btRigidBody* body = new btRigidBody( rb );
+//    return body;
+//}
 
-/** Physics Initialize */
-btDynamicsWorld* initPhysics()//Physics Initialize
-{
-    btDefaultCollisionConfiguration * collisionConfiguration = new btDefaultCollisionConfiguration();
-    btCollisionDispatcher * dispatcher = new btCollisionDispatcher( collisionConfiguration );
-    btConstraintSolver * solver = new btSequentialImpulseConstraintSolver;
+//btRigidBody * createSBTBox( osg::MatrixTransform * box,
+//    osg::Vec3 center )//return the Bullet with the center as the center of mass
+//{
+//    btCollisionShape * collision = osgbCollision::btBoxCollisionShapeFromOSG( box );//create a collision shape from box
+//    osgbDynamics::MotionState * motion = new osgbDynamics::MotionState();
+//    motion->setTransform( box );
+//    motion->setParentTransform( osg::Matrix::translate( center ) );
+//    btScalar mass( 0.0 );
+//    btVector3 inertia( 0, 0, 0 );//
+//    btRigidBody::btRigidBodyConstructionInfo rb( mass, motion, collision, inertia );//init the rigidBody
+//    btRigidBody * body = new btRigidBody( rb );
+//    return( body );
+//}
+//btRigidBody * createBTBox( osg::MatrixTransform * box,
+//    osg::Vec3 center )//return the Bullet with the center as the center of mass
+//{
+//    btCollisionShape * collision = osgbCollision::btBoxCollisionShapeFromOSG( box );//create a collision shape from box
+//    osgbDynamics::MotionState * motion = new osgbDynamics::MotionState();
+//    motion->setTransform( box );
+//    motion->setParentTransform( osg::Matrix::translate( center ) );
+//    btScalar mass( 1.0 );
+//    btVector3 inertia( 0, 0, 0 );  // can also be calculated
+//    btRigidBody::btRigidBodyConstructionInfo rb( mass, motion, collision, inertia );//init the rigidBody
+//    btRigidBody * body = new btRigidBody( rb );
+//    return( body );
+//}
 
-    btVector3 worldAabbMin( -10000, -10000, -10000 );
-    btVector3 worldAabbMax( 10000, 10000, 10000 );
-    btBroadphaseInterface * inter = new btAxisSweep3( worldAabbMin, worldAabbMax, 1000 );
+///** Physics Initialize */
+//btDynamicsWorld* initPhysics()//Physics Initialize
+//{
+//    btDefaultCollisionConfiguration * collisionConfiguration = new btDefaultCollisionConfiguration();
+//    btCollisionDispatcher * dispatcher = new btCollisionDispatcher( collisionConfiguration );
+//    btConstraintSolver * solver = new btSequentialImpulseConstraintSolver;
 
-    btDynamicsWorld * dynamicsWorld = new btDiscreteDynamicsWorld( dispatcher, inter, solver, collisionConfiguration );
-    dynamicsWorld->setGravity( btVector3( 0, 0, -9.8 ) );
+//    btVector3 worldAabbMin( -10000, -10000, -10000 );
+//    btVector3 worldAabbMax( 10000, 10000, 10000 );
+//    btBroadphaseInterface * inter = new btAxisSweep3( worldAabbMin, worldAabbMax, 1000 );
 
-    return( dynamicsWorld );
-}
+//    btDynamicsWorld * dynamicsWorld = new btDiscreteDynamicsWorld( dispatcher, inter, solver, collisionConfiguration );
+//    dynamicsWorld->setGravity( btVector3( 0, 0, -9.8 ) );
+
+//    return( dynamicsWorld );
+//}
 
 DemoQtWithOSG::DemoQtWithOSG(QWidget *parent)
 	: QMainWindow(parent)
@@ -120,44 +121,44 @@ DemoQtWithOSG::DemoQtWithOSG(QWidget *parent)
     createToolbars();
     createStatusBar();
 
-	osg::ref_ptr< osg::Node > cow = osgDB::readNodeFile("cow.osgt");
-    osg::ref_ptr< osg::Group > scene2 = new osg::Group;
-    scene2->addChild( cow );
+//	osg::ref_ptr< osg::Node > cow = osgDB::readNodeFile("cow.osgt");
+//    osg::ref_ptr< osg::Group > scene2 = new osg::Group;
+//    scene2->addChild( cow );
 
-    /** \brief Create a box and a ground, to simulate the world */
-    osg::ref_ptr< osg::Group > scene1 = new osg::Group;
-    btDynamicsWorld* dynamicsWorld = initPhysics();
-    osg::ref_ptr< osg::MatrixTransform > ground;
-    btRigidBody* groundBody;
+//    /** \brief Create a box and a ground, to simulate the world */
+//    osg::ref_ptr< osg::Group > scene1 = new osg::Group;
+//    btDynamicsWorld* dynamicsWorld = initPhysics();
+//    osg::ref_ptr< osg::MatrixTransform > ground;
+//    btRigidBody* groundBody;
 
-    float thin = .01;//
-    ground = createOSGBox( osg::Vec3( 50, 50, thin ) );//ground area
-    groundBody = createSBTBox( ground, osg::Vec3( 0, 0, 0 ) );
+//    float thin = .01;//
+//    ground = createOSGBox( osg::Vec3( 50, 50, thin ) );//ground area
+//    groundBody = createSBTBox( ground, osg::Vec3( 0, 0, 0 ) );
 
-    scene1->addChild( ground );
-    osg::ref_ptr< osg::MatrixTransform > box    = new osg::MatrixTransform;
-    osg::ref_ptr< osg::MatrixTransform > sphere = new osg::MatrixTransform;
-    btRigidBody* rbBox;
-    btRigidBody* rbSphere;
-    box      = createOSGBox( osg::Vec3(2, 2, 2) );
-    rbBox    = createBTBox( box, osg::Vec3( 10, 0 ,50));
-    sphere   = createOSGSphere( 1.0f );
-    rbSphere = createBTSphere( sphere, osg::Vec3( 0, 0, 100 ) );
+//    scene1->addChild( ground );
+//    osg::ref_ptr< osg::MatrixTransform > box    = new osg::MatrixTransform;
+//    osg::ref_ptr< osg::MatrixTransform > sphere = new osg::MatrixTransform;
+//    btRigidBody* rbBox;
+//    btRigidBody* rbSphere;
+//    box      = createOSGBox( osg::Vec3(2, 2, 2) );
+//    rbBox    = createBTBox( box, osg::Vec3( 10, 0 ,50));
+//    sphere   = createOSGSphere( 1.0f );
+//    rbSphere = createBTSphere( sphere, osg::Vec3( 0, 0, 100 ) );
+//qDebug()<<"E";
+//    scene1->addChild(box);
+//    scene1->addChild(sphere);
+//    dynamicsWorld->addRigidBody(rbBox);
+//    dynamicsWorld->addRigidBody(rbSphere);
+//    dynamicsWorld->addRigidBody( groundBody );
 
-    scene1->addChild(box);
-    scene1->addChild(sphere);
-    dynamicsWorld->addRigidBody(rbBox);
-    dynamicsWorld->addRigidBody(rbSphere);
-    dynamicsWorld->addRigidBody( groundBody );
+//    /** \brief ViewerWidget with physics */
+//    ViewerWidget* vw = new ViewerWidget( scene1, dynamicsWorld );
+////    kbController* hand = new kbController( rbSphere, true );
+////    vw->getView()->addEventHandler( hand );  ///< Still there some problem with controller
 
-    /** \brief ViewerWidget with physics */
-    ViewerWidget* vw = new ViewerWidget( scene1, dynamicsWorld );
-    kbController* hand = new kbController( rbSphere, true );
-    vw->getView()->addEventHandler( hand );  ///< Still there some problem with controller
-
-	osgViewer::ViewerBase::ThreadingModel threadingModel = 
-        osgViewer::ViewerBase::SingleThreaded; ///< Explict declaration for Qt 5
-    viewerWidget = new ViewerWidget( scene2, NULL, threadingModel );
+//	osgViewer::ViewerBase::ThreadingModel threadingModel =
+//        osgViewer::ViewerBase::SingleThreaded; ///< Explict declaration for Qt 5
+//    viewerWidget = new ViewerWidget( scene2, NULL, threadingModel );
 
     //viewerWidget->setGeometry(100, 100, 800, 600 );
     //viewerWidget->show();
@@ -166,10 +167,10 @@ DemoQtWithOSG::DemoQtWithOSG(QWidget *parent)
     QLabel* labelRight = new QLabel( tr("OSG without bullet"), this);
 
     m_mainGridLayout = new QGridLayout;
-    m_mainGridLayout->addWidget( vw, 0, 0, 4, 1 );
-    m_mainGridLayout->addWidget( viewerWidget, 0, 1, 4, 1 );
-    m_mainGridLayout->addWidget( labelLeft, 4, 0, 1, 1 , Qt::AlignCenter | Qt::AlignHCenter );
-    m_mainGridLayout->addWidget( labelRight, 4, 1, 1, 1 , Qt::AlignCenter | Qt::AlignHCenter );
+//    m_mainGridLayout->addWidget( vw, 0, 0, 4, 1 );
+//    m_mainGridLayout->addWidget( viewerWidget, 0, 1, 4, 1 );
+    m_mainGridLayout->addWidget( labelLeft, 0, 0, 1, 1 , Qt::AlignCenter | Qt::AlignHCenter );
+    m_mainGridLayout->addWidget( labelRight, 0, 1, 1, 1 , Qt::AlignCenter | Qt::AlignHCenter );
 
     centralWidget()->setLayout( m_mainGridLayout );
 }
@@ -222,9 +223,9 @@ void DemoQtWithOSG::createActions()
     m_cutAction->setStatusTip( tr("Cut") );
 
     /** Create aboutAction */
-    m_aboutAction = new QAction( tr("&About..."), this);
-    m_aboutAction->setStatusTip( tr("About the app..."));
-    connect(m_aboutAction, SIGNAL(triggered()), this, SLOT(aboutMsgBox()) );
+//    m_aboutAction = new QAction( tr("&About..."), this);
+//    m_aboutAction->setStatusTip( tr("About the app..."));
+//    connect(m_aboutAction, SIGNAL(triggered()), this, SLOT(aboutMsgBox()) );
 }
 
 void DemoQtWithOSG::createMenus()
@@ -247,7 +248,7 @@ void DemoQtWithOSG::createMenus()
 
     /** Help Menu */
     m_helpMenu = menuBar()->addMenu( tr("&Help") );
-    m_helpMenu->addAction( m_aboutAction );
+    //m_helpMenu->addAction( m_aboutAction );
     // TODO 20140604
 }
 
